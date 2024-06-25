@@ -61,7 +61,7 @@ export class ChatGptAiService {
     async getFastAnswer(answer: GetModelFastAnswer) {
         try {
             const params: CreateCompletionRequest = {
-                prompt: `Dame tres respuestas cortas rápidas para el siguiente mensaje: ${answer.message}"`,
+                prompt: `Dame tres respuestas cortas rápidas para el siguiente mensaje: ${answer.message} en el siguiente idioma: ${answer.language}"`,
                 model: DEFAULT_MODEL_ID,
                 temperature: DEFAULT_TEMPERATURE,
                 max_tokens: DEFAULT_MAX_TOKEN,

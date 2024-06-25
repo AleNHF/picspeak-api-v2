@@ -90,6 +90,7 @@ export class AwsService {
 
     try {
       const response = await rekognitionClient.send(command);
+      console.log('response', response)
       if (response.ModerationLabels && response.ModerationLabels[0] && response.ModerationLabels[0].Name) {
         return response.ModerationLabels[0].Name;
       } else {

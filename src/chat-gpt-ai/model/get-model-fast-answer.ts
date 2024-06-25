@@ -5,4 +5,8 @@ export class GetModelFastAnswer{
     @IsString()
     @IsNotEmpty()
     message:string
+
+    @IsString()
+    @IsNotEmpty()
+    language:string
 }
