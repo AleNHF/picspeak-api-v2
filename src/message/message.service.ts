@@ -24,7 +24,7 @@ export class MessageService {
   async createMessage(createMessageDto: CreateMessageDto, receiverId: number) {
     const { userId, chatId, resources } = createMessageDto;
     console.log('Receiver Id', receiverId)
-    
+
     const boliviaTimeZone = tzOffset.offsetOf('America/La_Paz');
     // Obtener instancias del usuario y del chat
     const user = await this.individualUserService.findOne(userId);
@@ -53,43 +53,41 @@ export class MessageService {
     if (message.image && message.image.length > 0) {
       // Obtener el content label de la imagen
       const imageLabelContent = message.image[0].content;
-      console.log(imageLabelContent)
+      console.log('imageLabelContent', imageLabelContent)
 
       const content = await this.compareUserContent(receiverId, imageLabelContent);
       message.isShowing = content ? false : true;
+      console.log('isShowing', message.isShowing)
     }
 
     // Guardar el mensaje en la base de datos
     return await this.messageRepository.save(message);
   }
 
-  async compareUserContent(receiverId, contentLabelImage) {
+  async compareUserContent(receiverId: number, contentLabelImage: string) {
     try {
       const inappropiateContents = await this.configurationService.getInappropriateContentUser(receiverId);
-      console.log('User Content Function', inappropiateContents)
+      console.log('User Content Function', inappropiateContents);
 
       if (Array.isArray(inappropiateContents)) {
         for (const item of inappropiateContents) {
-          // Verificar si la propiedad "inappropiateContent" existe y contiene "original_name"
           if (item.inappropiateContent && item.inappropiateContent.original_name) {
-            // Dividir las cadenas en palabras
-            const contentLabelWords = contentLabelImage.split(' ');
-            const originalNameWords = item.inappropiateContent.original_name.split(' ');
-      
-            // Verificar si hay alguna coincidencia entre las palabras
+            const contentLabelWords = contentLabelImage.replace(/[.,]/g, '').toLowerCase().split(' ');
+            const originalNameWords = item.inappropiateContent.original_name.replace(/[.,]/g, '').toLowerCase().split(' ');
+
             const hasIntersection = contentLabelWords.some(word => originalNameWords.includes(word));
-      
-            // Si hay coincidencia, retornar true
+
             if (hasIntersection) {
               return true;
             }
           }
         }
       }
-      
+
       return false;
     } catch (error) {
       console.error('Error al obtener contenido inapropiado del usuario:', error);
+      return false;
     }
   }
 }
